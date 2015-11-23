@@ -9,6 +9,8 @@ import Async from './Async';
 import Option from './Option';
 import Value from './Value';
 
+import mui from 'material-ui';
+
 function stringifyValue (value) {
 	if (typeof value === 'object') {
 		return JSON.stringify(value);
@@ -473,6 +475,26 @@ const Select = React.createClass({
 		}
 	},
 
+	renderFakeInput () {
+		return (
+			<mui.TextField
+				value=""
+				floatingLabelText={this.props.inputProps.floatingLabelText}
+				floatingLabelStyle={this.props.inputProps.floatingLabelStyle}
+				isFocused={this.state.isFocused}
+				readOnly={true}
+				tabIndex={-1}
+				style={{
+					position: 'absolute',
+					left: 0,
+					top: 0,
+					width: '100%',
+					height: '100%',
+				}}
+			/>
+		);
+	},
+
 	renderInput (valueArray) {
 		var className = classNames('Select-input', this.props.inputProps.className);
 		if (this.props.disabled || !this.props.searchable) {
@@ -490,6 +512,7 @@ const Select = React.createClass({
 					style={{ border: 0 }}/>
 			);
 		}
+
 		return (
 			<Input
 				{...this.props.inputProps}
@@ -638,17 +661,20 @@ const Select = React.createClass({
 				{this.renderHiddenField(valueArray)}
 				<div ref="control" className="Select-control" style={this.props.style} onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseDown} onTouchEnd={this.handleMouseDown}>
 					{this.renderValue(valueArray, isOpen)}
+					{this.renderFakeInput()}
 					{this.renderInput(valueArray)}
 					{this.renderLoading()}
 					{this.renderClear()}
 					{this.renderArrow()}
 				</div>
 				{isOpen ? (
-					<div ref="menuContainer" className="Select-menu-outer" style={this.props.menuContainerStyle}>
-						<div ref="menu" className="Select-menu" style={this.props.menuStyle} onScroll={this.handleMenuScroll} onMouseDown={this.handleMouseDownOnMenu}>
-							{this.renderMenu(options, !this.props.multi ? valueArray : null, focusedOption)}
+					<mui.Paper zDepth={1} className="Select-menu-outer">
+						<div ref="menuContainer" style={this.props.menuContainerStyle}>
+							<div ref="menu" className="Select-menu" style={this.props.menuStyle} onScroll={this.handleMenuScroll} onMouseDown={this.handleMouseDownOnMenu}>
+								{this.renderMenu(options, !this.props.multi ? valueArray : null, focusedOption)}
+							</div>
 						</div>
-					</div>
+					</mui.Paper>
 				) : null}
 			</div>
 		);

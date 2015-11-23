@@ -75,6 +75,8 @@ const Async = React.createClass({
 		this.loadOptions('');
 	},
 	componentWillReceiveProps (nextProps) {
+		if(nextProps.value) this.loadOptions(nextProps.value);
+
 		if (nextProps.cache !== this.props.cache) {
 			this.setState({
 				cache: initCache(nextProps.cache),
@@ -129,6 +131,7 @@ const Async = React.createClass({
 			if (this._lastInput.length < this.props.minimumInput) noResultsText = this.props.searchPromptText;
 			if (isLoading) noResultsText = this.props.searchingText;
 		}
+
 		return (
 			<Select
 				{...this.props}

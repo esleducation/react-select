@@ -19,9 +19,7 @@
 	// handle disabled state
 	&.is-disabled > .Select-control {
 		background-color: $select-input-bg-disabled;
-		&:hover {
-			box-shadow: none;
-		}
+
 	}
 	&.is-disabled .Select-arrow-zone {
 		cursor: default;
@@ -38,16 +36,14 @@
 	border: $select-input-border-width solid $select-input-border-color;
 	color: $select-text-color;
 	cursor: default;
-	display: table;
-	height: $select-input-height;
 	outline: none;
 	overflow: hidden;
 	position: relative;
 	width: 100%;
-
-	&:hover {
-		box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
-	}
+	min-height: 72px;
+	padding-top: 32px;
+	padding-right: 40px;
+	padding-bottom: 12px;
 }
 
 .is-searchable {
@@ -57,7 +53,6 @@
 }
 
 .is-open > .Select-control {
-	@include border-bottom-radius( 0 );
 	background: $select-input-bg;
 	border-color: darken($select-input-border-color, 10%) $select-input-border-color lighten($select-input-border-color, 5%);
 
@@ -86,12 +81,13 @@
 	bottom: 0;
 	color: $select-input-placeholder;
 	left: 0;
-	line-height: $select-input-internal-height;
+	line-height: 98px;
 	padding-left: $select-padding-horizontal;
 	padding-right: $select-padding-horizontal;
 	position: absolute;
 	right: 0;
 	top: 0;
+	visibility: hidden;
 
 	// crop text
 	max-width: 100%;
@@ -102,6 +98,7 @@
 
 .has-value:not(.Select--multi):not(.is-focused) > .Select-control > .Select-value,
 .has-value.is-pseudo-focused:not(.Select--multi) > .Select-control > .Select-value {
+
 	.Select-value-label {
 		color: $select-text-color;
 	}
@@ -114,6 +111,10 @@
 			text-decoration: underline;
 		}
 	}
+}
+
+.has-value:not(.Select--multi) > .Select-control > .Select-value {
+	visibility: visible;
 }
 
 
@@ -160,8 +161,10 @@
 // loading indicator
 .Select-loading-zone {
 	cursor: pointer;
-	display: table-cell;
-	position: relative;
+	display: block;
+	position: absolute;
+    top: 37px;
+    right: 22px;
 	text-align: center;
 	vertical-align: middle;
 	width: $select-loading-size;
@@ -178,8 +181,10 @@
 	@include animation( Select-animation-fadeIn 200ms );
 	color: $select-clear-color;
 	cursor: pointer;
-	display: table-cell;
-	position: relative;
+	display: block;
+	position: absolute;
+	right: 20px;
+	top: 40px;
 	text-align: center;
 	vertical-align: middle;
 	width: $select-clear-width;
@@ -202,12 +207,14 @@
 
 .Select-arrow-zone {
 	cursor: pointer;
-	display: table-cell;
-	position: relative;
+	display: block;
+	position: absolute;
+	top: 38px;
+	right: 0;
 	text-align: center;
 	vertical-align: middle;
 	width: ($select-arrow-width * 5);
-	padding-right: $select-arrow-width;
+	padding-right: 0;
 }
 
 .Select-arrow {
@@ -218,10 +225,7 @@
 	height: 0;
 	width: 0;
 }
-.is-open .Select-arrow,
-.Select-arrow-zone:hover > .Select-arrow {
-	border-top-color: $select-arrow-color-hover;
-}
+
 
 
 
