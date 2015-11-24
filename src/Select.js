@@ -539,10 +539,14 @@ const Select = React.createClass({
 
 	renderArrow () {
 		return (
-			<span className="Select-arrow-zone" onMouseDown={this.handleMouseDownOnArrow}>
-				<span className="Select-arrow" onMouseDown={this.handleMouseDownOnArrow} />
-			</span>
-		);
+			<mui.IconButton className="Select-arrow-zone" onMouseDown={this.handleMouseDownOnArrow} style={{
+				position: 'absolute',
+				right: '-15px',
+				top: '25px',
+			}}>
+				<mui.FontIcon color="#999" className="material-icons">{this.state.isOpen ? 'arrow_drop_up' : 'arrow_drop_down'}</mui.FontIcon>
+			</mui.IconButton>
+		)
 	},
 
 	filterOptions (excludeOptions) {
