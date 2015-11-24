@@ -75,7 +75,7 @@ const Async = React.createClass({
 		this.loadOptions('');
 	},
 	componentWillReceiveProps (nextProps) {
-		if(nextProps.value) this.loadOptions(nextProps.value);
+		if(this.props.value === undefined && nextProps.value) this.loadOptions(nextProps.value);
 
 		if (nextProps.cache !== this.props.cache) {
 			this.setState({
@@ -104,6 +104,7 @@ const Async = React.createClass({
 		};
 	},
 	loadOptions (input) {
+		if ( ! input.length) return;
 		if (this.props.ignoreAccents) input = stripDiacritics(input);
 		if (this.props.ignoreCase) input = input.toLowerCase();
 		this._lastInput = input;
@@ -122,6 +123,20 @@ const Async = React.createClass({
 		let responseHandler = this.getResponseHandler(input);
 		thenPromise(this.props.loadOptions(input, responseHandler), responseHandler);
 	},
+	onChange (newValue) {
+		this.props.onChange(newValue);
+
+		let value;
+
+		if (newValue === null) {
+			value = [];
+		} else {
+			value = [newValue];
+		}
+		this.setState({
+			options: value
+		});
+	},
 	render () {
 		let { noResultsText } = this.props;
 		let { isLoading, options } = this.state;
@@ -135,6 +150,7 @@ const Async = React.createClass({
 		return (
 			<Select
 				{...this.props}
+				onChange={this.onChange}
 				isLoading={isLoading}
 				noResultsText={noResultsText}
 				onInputChange={this.loadOptions}
