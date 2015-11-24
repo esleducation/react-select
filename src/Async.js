@@ -65,14 +65,14 @@ const Async = React.createClass({
 		return {
 			cache: initCache(this.props.cache),
 			isLoading: false,
-			options: [],
+			options: this.props.options || [],
 		};
 	},
 	componentWillMount () {
 		this._lastInput = '';
 	},
 	componentDidMount () {
-		this.loadOptions(this.props.value || '');
+		this.loadOptions('');
 	},
 	componentWillReceiveProps (nextProps) {
 
