@@ -72,15 +72,22 @@ const Async = React.createClass({
 		this._lastInput = '';
 	},
 	componentDidMount () {
-		this.loadOptions('');
+		this.loadOptions(this.props.value || '');
 	},
 	componentWillReceiveProps (nextProps) {
-		if(this.props.value === undefined && nextProps.value) this.loadOptions(nextProps.value);
 
 		if (nextProps.cache !== this.props.cache) {
 			this.setState({
 				cache: initCache(nextProps.cache),
 			});
+		}
+
+		if( ! this.props.options && nextProps.options) {
+			this.setState({
+				options: nextProps.options
+			});
+		} else if(this.props.value === undefined && nextProps.value && ! nextProps.options) {
+			this.loadOptions(nextProps.value);
 		}
 	},
 	resetState () {
