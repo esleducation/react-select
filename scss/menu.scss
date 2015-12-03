@@ -41,7 +41,7 @@
 	color: $select-option-color;
 	cursor: pointer;
 	display: block;
-	padding: $select-padding-vertical $select-padding-horizontal;
+	padding: $select-padding-vertical 8px;
 
 	&:last-child {
 		@include border-bottom-radius( $select-input-border-radius );
