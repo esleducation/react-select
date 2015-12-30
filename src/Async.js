@@ -19,7 +19,7 @@ function updateCache (cache, input, data) {
 
 function getFromCache (cache, input) {
 	if (!cache) return;
-	for (let i = 0; i <= input.length; i++) {
+	for (let i = input.length; i >= 0; --i) {
 		let cacheKey = input.slice(0, i);
 		if (cache[cacheKey] && (input === cacheKey || cache[cacheKey].complete)) {
 			return cache[cacheKey];
@@ -29,7 +29,7 @@ function getFromCache (cache, input) {
 
 function thenPromise (promise, callback) {
 	if (!promise || typeof promise.then !== 'function') return;
-	promise.then((data) => {
+	return promise.then((data) => {
 		callback(null, data);
 	}, (err) => {
 		callback(err);
@@ -46,7 +46,10 @@ const Async = React.createClass({
 		loadingPlaceholder: React.PropTypes.string,     // replaces the placeholder while options are loading
 		minimumInput: React.PropTypes.number,           // the minimum number of characters that trigger loadOptions
 		noResultsText: React.PropTypes.string,          // placeholder displayed when there are no matching search results (shared with Select)
-		placeholder: React.PropTypes.string,            // field placeholder, displayed when there's no value (shared with Select)
+		placeholder: React.PropTypes.oneOfType([        // field placeholder, displayed when there's no value (shared with Select)
+			React.PropTypes.string,
+			React.PropTypes.node
+		]),
 		searchingText: React.PropTypes.string,          // message to display while options are loading
 		searchPromptText: React.PropTypes.string,       // label to prompt for search input
 	},
@@ -90,6 +93,9 @@ const Async = React.createClass({
 			this.loadOptions(nextProps.value);
 		}
 	},
+	focus () {
+		this.refs.select.focus();
+	},
 	resetState () {
 		this._currentRequestId = -1;
 		this.setState({
@@ -128,7 +134,7 @@ const Async = React.createClass({
 			isLoading: true,
 		});
 		let responseHandler = this.getResponseHandler(input);
-		thenPromise(this.props.loadOptions(input, responseHandler), responseHandler);
+		return thenPromise(this.props.loadOptions(input, responseHandler), responseHandler);
 	},
 	onChange (newValue) {
 		this.props.onChange(newValue);
@@ -157,6 +163,7 @@ const Async = React.createClass({
 		return (
 			<Select
 				{...this.props}
+				ref="select"
 				onChange={this.onChange}
 				isLoading={isLoading}
 				noResultsText={noResultsText}

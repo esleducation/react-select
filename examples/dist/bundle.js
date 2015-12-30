@@ -33,7 +33,7 @@ function updateCache(cache, input, data) {
 
 function getFromCache(cache, input) {
 	if (!cache) return;
-	for (var i = 0; i <= input.length; i++) {
+	for (var i = input.length; i >= 0; --i) {
 		var cacheKey = input.slice(0, i);
 		if (cache[cacheKey] && (input === cacheKey || cache[cacheKey].complete)) {
 			return cache[cacheKey];
@@ -43,7 +43,7 @@ function getFromCache(cache, input) {
 
 function thenPromise(promise, callback) {
 	if (!promise || typeof promise.then !== 'function') return;
-	promise.then(function (data) {
+	return promise.then(function (data) {
 		callback(null, data);
 	}, function (err) {
 		callback(err);
@@ -62,7 +62,8 @@ var Async = _react2['default'].createClass({
 		loadingPlaceholder: _react2['default'].PropTypes.string, // replaces the placeholder while options are loading
 		minimumInput: _react2['default'].PropTypes.number, // the minimum number of characters that trigger loadOptions
 		noResultsText: _react2['default'].PropTypes.string, // placeholder displayed when there are no matching search results (shared with Select)
-		placeholder: _react2['default'].PropTypes.string, // field placeholder, displayed when there's no value (shared with Select)
+		placeholder: _react2['default'].PropTypes.oneOfType([// field placeholder, displayed when there's no value (shared with Select)
+		_react2['default'].PropTypes.string, _react2['default'].PropTypes.node]),
 		searchingText: _react2['default'].PropTypes.string, // message to display while options are loading
 		searchPromptText: _react2['default'].PropTypes.string },
 	// label to prompt for search input
@@ -96,6 +97,9 @@ var Async = _react2['default'].createClass({
 				cache: initCache(nextProps.cache)
 			});
 		}
+	},
+	focus: function focus() {
+		this.refs.select.focus();
 	},
 	resetState: function resetState() {
 		this._currentRequestId = -1;
@@ -136,7 +140,7 @@ var Async = _react2['default'].createClass({
 			isLoading: true
 		});
 		var responseHandler = this.getResponseHandler(input);
-		thenPromise(this.props.loadOptions(input, responseHandler), responseHandler);
+		return thenPromise(this.props.loadOptions(input, responseHandler), responseHandler);
 	},
 	render: function render() {
 		var noResultsText = this.props.noResultsText;
@@ -151,6 +155,7 @@ var Async = _react2['default'].createClass({
 			if (isLoading) noResultsText = this.props.searchingText;
 		}
 		return _react2['default'].createElement(_Select2['default'], _extends({}, this.props, {
+			ref: 'select',
 			isLoading: isLoading,
 			noResultsText: noResultsText,
 			onInputChange: this.loadOptions,
@@ -297,7 +302,7 @@ var Value = _react2['default'].createClass({
 		var className = 'Select-value-label';
 		return this.props.onClick || this.props.value.href ? _react2['default'].createElement(
 			'a',
-			{ className: className, href: this.props.value.href, target: this.props.value.target, onMouseDown: this.handleMouseDown, onTouchEnd: this.props.handleMouseDown },
+			{ className: className, href: this.props.value.href, target: this.props.value.target, onMouseDown: this.handleMouseDown, onTouchEnd: this.handleMouseDown },
 			this.props.children
 		) : _react2['default'].createElement(
 			'span',
@@ -397,8 +402,8 @@ var Select = _react2['default'].createClass({
 		autofocus: _react2['default'].PropTypes.bool, // autofocus the component on mount
 		backspaceRemoves: _react2['default'].PropTypes.bool, // whether backspace removes an item if there is no text input
 		className: _react2['default'].PropTypes.string, // className for the outer element
-		clearAllText: _react2['default'].PropTypes.string, // title for the "clear" control when multi: true
-		clearValueText: _react2['default'].PropTypes.string, // title for the "clear" control
+		clearAllText: _react2['default'].PropTypes.oneOfType([_react2['default'].PropTypes.string, _react2['default'].PropTypes.node]), // title for the "clear" control when multi: true
+		clearValueText: _react2['default'].PropTypes.oneOfType([_react2['default'].PropTypes.string, _react2['default'].PropTypes.node]), // title for the "clear" control
 		clearable: _react2['default'].PropTypes.bool, // should it be possible to reset value
 		delimiter: _react2['default'].PropTypes.string, // delimiter to use to join multiple values for the hidden field value
 		disabled: _react2['default'].PropTypes.bool, // whether the Select is disabled or not
@@ -412,12 +417,14 @@ var Select = _react2['default'].createClass({
 		labelKey: _react2['default'].PropTypes.string, // path of the label value in option objects
 		matchPos: _react2['default'].PropTypes.string, // (any|start) match the start or entire string when filtering
 		matchProp: _react2['default'].PropTypes.string, // (any|label|value) which option property to filter on
+		scrollMenuIntoView: _react2['default'].PropTypes.bool, // boolean to enable the viewport to shift so that the full menu fully visible when engaged
+		menuBuffer: _react2['default'].PropTypes.number, // optional buffer (in px) between the bottom of the viewport and the bottom of the menu
 		menuStyle: _react2['default'].PropTypes.object, // optional style to apply to the menu
 		menuContainerStyle: _react2['default'].PropTypes.object, // optional style to apply to the menu container
 		multi: _react2['default'].PropTypes.bool, // multi-value input
 		name: _react2['default'].PropTypes.string, // generates a hidden <input /> tag with this field name for html forms
 		newOptionCreator: _react2['default'].PropTypes.func, // factory to create new options when allowCreate set
-		noResultsText: _react2['default'].PropTypes.string, // placeholder displayed when there are no matching search results
+		noResultsText: _react2['default'].PropTypes.oneOfType([_react2['default'].PropTypes.string, _react2['default'].PropTypes.node]), // placeholder displayed when there are no matching search results
 		onBlur: _react2['default'].PropTypes.func, // onBlur handler: function (event) {}
 		onChange: _react2['default'].PropTypes.func, // onChange handler: function (newValue) {}
 		onFocus: _react2['default'].PropTypes.func, // onFocus handler: function (event) {}
@@ -427,10 +434,11 @@ var Select = _react2['default'].createClass({
 		optionComponent: _react2['default'].PropTypes.func, // option component to render in dropdown
 		optionRenderer: _react2['default'].PropTypes.func, // optionRenderer: function (option) {}
 		options: _react2['default'].PropTypes.array, // array of options
-		placeholder: _react2['default'].PropTypes.string, // field placeholder, displayed when there's no value
+		placeholder: _react2['default'].PropTypes.oneOfType([_react2['default'].PropTypes.string, _react2['default'].PropTypes.node]), // field placeholder, displayed when there's no value
 		searchable: _react2['default'].PropTypes.bool, // whether to enable searching feature or not
 		simpleValue: _react2['default'].PropTypes.bool, // pass the value to onChange as a simple value (legacy pre 1.0 mode), defaults to false
 		style: _react2['default'].PropTypes.object, // optional style to apply to the control
+		tabIndex: _react2['default'].PropTypes.string, // optional tab index of the control
 		value: _react2['default'].PropTypes.any, // initial field value
 		valueComponent: _react2['default'].PropTypes.func, // value component to render
 		valueKey: _react2['default'].PropTypes.string, // path of the label value in option objects
@@ -457,6 +465,8 @@ var Select = _react2['default'].createClass({
 			labelKey: 'label',
 			matchPos: 'any',
 			matchProp: 'any',
+			scrollMenuIntoView: true,
+			menuBuffer: 0,
 			multi: false,
 			noResultsText: 'No results found',
 			optionComponent: _Option2['default'],
@@ -498,6 +508,15 @@ var Select = _react2['default'].createClass({
 				menuDOM.scrollTop = focusedDOM.offsetTop + focusedDOM.clientHeight - menuDOM.offsetHeight;
 			}
 		}
+		if (this.props.scrollMenuIntoView && this.refs.menuContainer) {
+			var menuContainerRect = this.refs.menuContainer.getBoundingClientRect();
+			if (window.innerHeight < menuContainerRect.bottom + this.props.menuBuffer) {
+				window.scrollTo(0, window.scrollY + menuContainerRect.bottom + this.props.menuBuffer - window.innerHeight);
+			}
+		}
+		if (prevProps.disabled !== this.props.disabled) {
+			this.setState({ isFocused: false });
+		}
 	},
 
 	focus: function focus() {
@@ -518,6 +537,7 @@ var Select = _react2['default'].createClass({
 
 		// for the non-searchable select, toggle the menu
 		if (!this.props.searchable) {
+			this.focus();
 			return this.setState({
 				isOpen: !this.state.isOpen
 			});
@@ -556,7 +576,8 @@ var Select = _react2['default'].createClass({
 	closeMenu: function closeMenu() {
 		this.setState({
 			isOpen: false,
-			isPseudoFocused: this.state.isFocused && !this.props.multi
+			isPseudoFocused: this.state.isFocused && !this.props.multi,
+			inputValue: ''
 		});
 	},
 
@@ -573,9 +594,10 @@ var Select = _react2['default'].createClass({
 	},
 
 	handleInputBlur: function handleInputBlur(event) {
-		if (document.activeElement.isEqualNode(this.refs.menu)) {
+		if (this.refs.menu && document.activeElement.isEqualNode(this.refs.menu)) {
 			return;
 		}
+
 		if (this.props.onBlur) {
 			this.props.onBlur(event);
 		}
@@ -671,7 +693,7 @@ var Select = _react2['default'].createClass({
 		if (this.props.multi) {
 			if (typeof value === 'string') value = value.split(this.props.delimiter);
 			if (!Array.isArray(value)) {
-				if (!value) return [];
+				if (value === null || value === undefined) return [];
 				value = [value];
 			}
 			return value.map(this.expandValue).filter(function (i) {
@@ -730,6 +752,7 @@ var Select = _react2['default'].createClass({
 	popValue: function popValue() {
 		var valueArray = this.getValueArray();
 		if (!valueArray.length) return;
+		if (valueArray[valueArray.length - 1].clearableValue === false) return;
 		this.setValue(valueArray.slice(0, valueArray.length - 1));
 	},
 
@@ -842,7 +865,7 @@ var Select = _react2['default'].createClass({
 				return _react2['default'].createElement(
 					ValueComponent,
 					{
-						disabled: _this2.props.disabled,
+						disabled: _this2.props.disabled || value.clearableValue === false,
 						key: 'value-' + i + '-' + value[_this2.props.valueKey],
 						onClick: onClick,
 						onRemove: _this2.removeValue,
@@ -868,12 +891,13 @@ var Select = _react2['default'].createClass({
 	renderInput: function renderInput(valueArray) {
 		var className = (0, _classnames2['default'])('Select-input', this.props.inputProps.className);
 		if (this.props.disabled || !this.props.searchable) {
-			if (this.props.multi && valueArray.length) return;
-			return _react2['default'].createElement(
-				'div',
-				{ className: className },
-				' '
-			);
+			return _react2['default'].createElement('div', _extends({}, this.props.inputProps, {
+				className: className,
+				tabIndex: this.props.tabIndex || 0,
+				onBlur: this.handleInputBlur,
+				onFocus: this.handleInputFocus,
+				ref: 'input',
+				style: { border: 0, width: 1, display: 'inline-block' } }));
 		}
 		return _react2['default'].createElement(_reactInputAutosize2['default'], _extends({}, this.props.inputProps, {
 			className: className,

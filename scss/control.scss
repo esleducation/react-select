@@ -36,7 +36,12 @@
 	border: $select-input-border-width solid $select-input-border-color;
 	color: $select-text-color;
 	cursor: default;
+	display: table;
+	border-spacing: 0;
+	border-collapse: separate;
+	height: $select-input-height;
 	outline: none;
+	overflow: hidden;
 	position: relative;
 	width: 100%;
 	min-height: 72px;
