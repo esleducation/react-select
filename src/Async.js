@@ -56,7 +56,7 @@ const Async = React.createClass({
 			ignoreAccents: true,
 			ignoreCase: true,
 			loadingPlaceholder: 'Loading...',
-			minimumInput: 0,
+			minimumInput: 1,
 			searchingText: 'Searching...',
 			searchPromptText: 'Type to search',
 		};
