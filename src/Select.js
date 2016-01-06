@@ -510,6 +510,7 @@ const Select = React.createClass({
 				floatingLabelStyle={this.props.inputProps.floatingLabelStyle}
 				isFocused={this.state.isFocused}
 				readOnly={true}
+				disabled={this.props.disabled}
 				tabIndex={-1}
 				style={{
 					position: 'absolute',
