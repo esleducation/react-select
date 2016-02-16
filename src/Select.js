@@ -290,15 +290,15 @@ const Select = React.createClass({
 			case 40: // down
 				this.focusNextOption();
 			break;
-			// case 188: // ,
-			// 	if (this.props.allowCreate && this.props.multi) {
-			// 		event.preventDefault();
-			// 		event.stopPropagation();
-			// 		this.selectFocusedOption();
-			// 	} else {
-			// 		return;
-			// 	}
-			// break;
+			case 188: // ,
+				// if (this.props.allowCreate && this.props.multi) {
+				// 	event.preventDefault();
+				// 	event.stopPropagation();
+				// 	this.selectFocusedOption();
+				// } else {
+				// 	return;
+				// }
+			break;
 			default: return;
 		}
 		event.preventDefault();
@@ -417,6 +417,7 @@ const Select = React.createClass({
 
 	focusAdjacentOption (dir) {
 		var options = this._visibleOptions.filter(i => !i.disabled);
+
 		this._scrollToFocusedOptionOnUpdate = true;
 		if (!this.state.isOpen) {
 			this.setState({
@@ -434,6 +435,7 @@ const Select = React.createClass({
 				break;
 			}
 		}
+
 		var focusedOption = options[0];
 		if (dir === 'next' && focusedIndex > -1 && focusedIndex < options.length - 1) {
 			focusedOption = options[focusedIndex + 1];
@@ -450,9 +452,9 @@ const Select = React.createClass({
 	},
 
 	selectFocusedOption () {
-		// if (this.props.allowCreate && !this.state.focusedOption) {
-		// 	return this.selectValue(this.state.inputValue);
-		// }
+		if (this.props.allowCreate && !this.state.focusedOption) {
+			return this.selectValue(this.state.inputValue);
+		}
 		if (this._focusedOption) {
 			return this.selectValue(this._focusedOption);
 		}
@@ -618,6 +620,7 @@ const Select = React.createClass({
 		if (options && options.length) {
 			let Option = this.props.optionComponent;
 			let renderLabel = this.props.optionRenderer || this.getOptionLabel;
+
 			return options.map((option, i) => {
 				let isSelected = valueArray && valueArray.indexOf(option) > -1;
 				let isFocused = option === focusedOption;
@@ -628,6 +631,7 @@ const Select = React.createClass({
 					'is-focused': isFocused,
 					'is-disabled': option.disabled,
 				});
+				let label = option.create ? this.props.addLabelText.replace('{label}', option.label) : renderLabel(option);
 				return (
 					<Option
 						className={optionClass}
@@ -640,7 +644,7 @@ const Select = React.createClass({
 						isSelected={isSelected}
 						ref={optionRef}
 						>
-						{renderLabel(option)}
+						{label}
 					</Option>
 				);
 			});
@@ -674,6 +678,23 @@ const Select = React.createClass({
 		let options = this._visibleOptions = this.filterOptions(this.props.multi ? valueArray : null);
 		let isOpen = this.state.isOpen;
 		if (this.props.multi && !options.length && valueArray.length && !this.state.inputValue) isOpen = false;
+
+		// Check to add a new value
+		if (this.props.allowCreate && this.state.inputValue.trim()) {
+			let inputValue = this.state.inputValue;
+			// options = options.slice();
+			let newOption = this.props.newOptionCreator ? this.props.newOptionCreator(inputValue) : {
+				value: inputValue,
+				label: inputValue,
+				create: true
+			};
+			if(!options || options.length == 0) {
+				focusedOption = newOption;
+			}
+			options.unshift(newOption);
+			this._visibleOptions = options;
+		}
+
 		let focusedOption = this._focusedOption = this.getFocusableOption(valueArray[0]);
 		let className = classNames('Select', this.props.className, {
 			'Select--multi': this.props.multi,
