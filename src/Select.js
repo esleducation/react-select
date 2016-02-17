@@ -452,12 +452,22 @@ const Select = React.createClass({
 	},
 
 	selectFocusedOption () {
-		if (this.props.allowCreate && !this.state.focusedOption) {
-			return this.selectValue(this.state.inputValue);
+		if(this.props.allowCreate && this._focusedOption['create']) {
+			return this.selectValue({
+				value: this.state.inputValue,
+				label: this.state.inputValue,
+			});
 		}
-		if (this._focusedOption) {
+		else if (this._focusedOption) {
 			return this.selectValue(this._focusedOption);
 		}
+
+		// if (this.props.allowCreate && !this.state.focusedOption) {
+		// 	return this.selectValue(this.state.inputValue);
+		// }
+		// if (this._focusedOption) {
+		// 	return this.selectValue(this._focusedOption);
+		// }
 	},
 
 	renderLoading () {
@@ -508,6 +518,7 @@ const Select = React.createClass({
 		return (
 			<mui.TextField
 				value=""
+				errorText={this.props.inputProps.errorText}
 				floatingLabelText={this.props.inputProps.floatingLabelText}
 				floatingLabelStyle={this.props.inputProps.floatingLabelStyle}
 				isFocused={this.state.isFocused}
@@ -620,7 +631,6 @@ const Select = React.createClass({
 		if (options && options.length) {
 			let Option = this.props.optionComponent;
 			let renderLabel = this.props.optionRenderer || this.getOptionLabel;
-
 			return options.map((option, i) => {
 				let isSelected = valueArray && valueArray.indexOf(option) > -1;
 				let isFocused = option === focusedOption;
