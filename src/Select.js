@@ -85,6 +85,7 @@ const Select = React.createClass({
 		valueKey: React.PropTypes.string,           // path of the label value in option objects
 		valueRenderer: React.PropTypes.func,        // valueRenderer: function (option) {}
 		wrapperStyle: React.PropTypes.object,       // optional style to apply to the component wrapper
+		arrowStyle: React.PropTypes.object,       // optional style to apply to the component arrow
 	},
 
 	getDefaultProps () {
@@ -581,6 +582,7 @@ const Select = React.createClass({
 				position: 'absolute',
 				right: '-15px',
 				top: '25px',
+				...this.props.arrowStyle
 			}}>
 				<mui.FontIcon color="#999" className="material-icons">{this.state.isOpen ? 'arrow_drop_up' : 'arrow_drop_down'}</mui.FontIcon>
 			</mui.IconButton>

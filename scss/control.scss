@@ -140,7 +140,7 @@
 		display: inline-block;
 		font-family: inherit;
 		font-size: inherit;
-		height: $select-input-internal-height;
+		height: ($select-input-internal-height + 10px);
 		margin: 0;
 		outline: none;
 		padding: 0;
