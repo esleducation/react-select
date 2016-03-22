@@ -86,6 +86,7 @@ const Select = React.createClass({
 		valueRenderer: React.PropTypes.func,        // valueRenderer: function (option) {}
 		wrapperStyle: React.PropTypes.object,       // optional style to apply to the component wrapper
 		arrowStyle: React.PropTypes.object,       // optional style to apply to the component arrow
+		whiteVersion: React.PropTypes.bool,       // optional boolean to render a white version of the component
 	},
 
 	getDefaultProps () {
@@ -516,23 +517,46 @@ const Select = React.createClass({
 	},
 
 	renderFakeInput () {
+		let textFieldProps = {
+			value: '',
+			errorText: this.props.inputProps.errorText,
+			floatingLabelText: this.props.inputProps.floatingLabelText,
+			floatingLabelStyle: this.props.inputProps.floatingLabelStyle,
+			isFocused: this.state.isFocused,
+			readOnly: true,
+			disabled: this.props.disabled,
+			tabIndex: -1,
+			style: {
+				position: 'absolute',
+				left: 0,
+				top: 0,
+				width: '100%',
+				height: '100%',
+			},
+		};
+
+		if(this.props.whiteVersion) {
+			textFieldProps.floatingLabelStyle = {
+				...textFieldProps.floatingLabelStyle,
+				color: '#fff'
+			};
+			textFieldProps.hintStyle = {
+				color: '#fff'
+			};
+			textFieldProps.inputStyle = {
+				color: '#fff'
+			};
+			textFieldProps.underlineStyle = {
+				borderBottom: 'solid 1px #fff',
+			};
+			textFieldProps.underlineFocusStyle = {
+				borderColor: '#fff',
+			};
+		}
+
 		return (
 			<mui.TextField
-				value=""
-				errorText={this.props.inputProps.errorText}
-				floatingLabelText={this.props.inputProps.floatingLabelText}
-				floatingLabelStyle={this.props.inputProps.floatingLabelStyle}
-				isFocused={this.state.isFocused}
-				readOnly={true}
-				disabled={this.props.disabled}
-				tabIndex={-1}
-				style={{
-					position: 'absolute',
-					left: 0,
-					top: 0,
-					width: '100%',
-					height: '100%',
-				}}
+				{...textFieldProps}
 			/>
 		);
 	},
@@ -584,7 +608,7 @@ const Select = React.createClass({
 				top: '25px',
 				...this.props.arrowStyle
 			}}>
-				<mui.FontIcon color="#999" className="material-icons">{this.state.isOpen ? 'arrow_drop_up' : 'arrow_drop_down'}</mui.FontIcon>
+				<mui.FontIcon color={this.props.whiteVersion ? '#fff' : '#999'} className="material-icons">{this.state.isOpen ? 'arrow_drop_up' : 'arrow_drop_down'}</mui.FontIcon>
 			</mui.IconButton>
 		)
 	},
@@ -717,6 +741,7 @@ const Select = React.createClass({
 			'is-pseudo-focused': this.state.isPseudoFocused,
 			'is-searchable': this.props.searchable,
 			'has-value': valueArray.length,
+			'is-white': this.props.whiteVersion,
 		});
 		return (
 			<div ref="wrapper" className={className} style={this.props.wrapperStyle}>

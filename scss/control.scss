@@ -236,6 +236,13 @@
 	width: 0;
 }
 
+// Misc,sorry for this ugly fast fix
+.Select.is-white {
+	.Select-input input,
+	.Select-value-label{
+		color: #fff !important;
+	}
+}
 
 
 
